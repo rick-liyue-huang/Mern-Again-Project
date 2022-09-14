@@ -9,6 +9,7 @@ const { errorHandler } = require("./middlewares/errorHandler");
 const { corsOptions } = require("./config/corsOptions");
 const { connectDB } = require("./config/mongDB");
 const { userRouter } = require("./routes/userRoutes");
+const { noteRouter } = require("./routes/noteRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3500;
@@ -35,6 +36,7 @@ app.use("/", express.static(path.join(__dirname, "public")));
  */
 app.use("/", require("./routes/root"));
 app.use("/users", userRouter);
+app.use("/notes", noteRouter);
 
 /**
  * define the 404 route rules

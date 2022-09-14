@@ -10,7 +10,7 @@ const bcrypt = require("bcrypt");
  */
 const getAllUsersController = asyncHandler(async (req, res) => {
 	// Get all users from MongoDB
-	const users = await User.find().select("-password").lean();
+	const users = await UserModel.find().select("-password").lean();
 
 	// If no users
 	if (!users?.length) {
@@ -34,7 +34,7 @@ const createNewUserController = asyncHandler(async (req, res) => {
 	}
 
 	// Check for duplicate username
-	const duplicate = await User.findOne({ username }).lean().exec();
+	const duplicate = await UserModel.findOne({ username }).lean().exec();
 
 	if (duplicate) {
 		return res.status(409).json({ message: "Duplicate username" });
@@ -46,7 +46,7 @@ const createNewUserController = asyncHandler(async (req, res) => {
 	const userObject = { username, password: hashedPwd, roles };
 
 	// Create and store new user
-	const user = await User.create(userObject);
+	const user = await UserModel.create(userObject);
 
 	if (user) {
 		//created
@@ -78,14 +78,14 @@ const updateUserController = asyncHandler(async (req, res) => {
 	}
 
 	// Does the user exist to update?
-	const user = await User.findById(id).exec();
+	const user = await UserModel.findById(id).exec();
 
 	if (!user) {
 		return res.status(400).json({ message: "User not found" });
 	}
 
 	// Check for duplicate
-	const duplicate = await User.findOne({ username }).lean().exec();
+	const duplicate = await UserModel.findOne({ username }).lean().exec();
 
 	// Allow updates to the original user
 	if (duplicate && duplicate?._id.toString() !== id) {
@@ -120,13 +120,13 @@ const deleteUserController = asyncHandler(async (req, res) => {
 	}
 
 	// Does the user still have assigned notes?
-	const note = await Note.findOne({ user: id }).lean().exec();
+	const note = await NoteModel.findOne({ user: id }).lean().exec();
 	if (note) {
 		return res.status(400).json({ message: "User has assigned notes" });
 	}
 
 	// Does the user exist to delete?
-	const user = await User.findById(id).exec();
+	const user = await UserModel.findById(id).exec();
 
 	if (!user) {
 		return res.status(400).json({ message: "User not found" });
