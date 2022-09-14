@@ -32,4 +32,6 @@ NoteSchema.plugin(AutoIncrement, {
 	start_seq: 500,
 });
 
-module.exports = mongoose.model("Note", NoteSchema);
+const NoteModel = mongoose.model("Note", NoteSchema);
+
+module.exports = { NoteModel };
