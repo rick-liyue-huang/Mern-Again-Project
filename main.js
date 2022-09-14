@@ -1,10 +1,23 @@
 const express = require("express");
 const path = require("path");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
+const { logger } = require("./middlewares/logger");
+const { errorHandler } = require("./middlewares/errorHandler");
+const { corsOptions } = require("./config/corsOptions");
 
 const app = express();
 const PORT = process.env.PORT || 3500;
 
-app.use("/", express.static(path.join(__dirname, "/public")));
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(cookieParser());
+app.use(logger);
+
+// built in middleware
+app.use("/", express.static(path.join(__dirname, "public")));
+// app.use(express.static('public'));
+
 // use it after use the static source
 app.use("/", require("./routes/root"));
 
@@ -18,6 +31,8 @@ app.all("*", (req, res) => {
 		res.type("txt").send("404  not found");
 	}
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
 	console.log(`this server is running on port of ${PORT}`);
